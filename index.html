@@ -15,6 +15,20 @@
 
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
+    <script>
+VANTA.CELLS({
+  el: "#vanta-bg",          // This links to the div you created
+  mouseControls: true,      // Background reacts to mouse
+  touchControls: true,      // Works on touchscreens
+  gyroControls: false,      // Disable motion sensor control
+  minHeight: 200.00,        // Minimum height of the canvas
+  minWidth: 200.00,         // Minimum width of the canvas
+  scale: 1.5,               // Size of the animation (you chose 1.5)
+  color1: 0x8c8c,           // Your first color (gray)
+  color2: 0xf2e735,         // Your second color (yellow)
+  speed: 1                  // Speed of animation
+})
+</script>
+
   </body>
 </html>

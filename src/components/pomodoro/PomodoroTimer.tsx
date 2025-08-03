@@ -101,7 +101,7 @@ const PomodoroTimer = () => {
         </Tabs>
       </CardHeader>
       <CardContent className="flex flex-col justify-center items-center py-10">
-        <div className="text-8xl font-light tracking-tighter text-primary">
+        <div className="text-8xl font-semibold font-mono tracking-tighter text-primary">
           {formatTime(timeLeft)}
         </div>
         <p className="text-muted-foreground mt-4 text-sm">

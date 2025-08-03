@@ -68,7 +68,8 @@ const PomodoroTimer = () => {
           handleModeChange('shortBreak', autoStartBreaks);
         }
       } else {
-        handleModeChange('pomodoro', autoStartPomodoros);
+        const isLongBreakFinished = mode === 'longBreak';
+        handleModeChange('pomodoro', autoStartPomodoros, isLongBreakFinished);
       }
       return;
     }
@@ -126,7 +127,7 @@ const PomodoroTimer = () => {
             </Button>
           </div>
           <CardTitle className="text-center text-lg font-medium pt-8 text-foreground/80">Pomodoro</CardTitle>
-          <Tabs value={mode} onValueChange={(value) => handleModeChange(value as Mode, false, true)} className="w-full pt-4">
+          <Tabs value={mode} onValueChange={(value) => handleModeChange(value as Mode, false, false)} className="w-full pt-4">
             <TabsList className="grid w-full grid-cols-3 bg-slate-200/80 dark:bg-slate-900/80 p-1 h-auto rounded-lg">
               <TabsTrigger value="pomodoro" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Pomodoro</TabsTrigger>
               <TabsTrigger value="shortBreak" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Short Break</TabsTrigger>

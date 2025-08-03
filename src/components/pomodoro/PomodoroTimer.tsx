@@ -87,18 +87,17 @@ const PomodoroTimer = () => {
     setTimeLeft(sessionTimes[mode]);
   };
 
-  const handleSaveSettings = (newTimes: { shortBreak: number; longBreak: number }) => {
+  const handleSaveSettings = (newTimes: { pomodoro: number; shortBreak: number; longBreak: number }) => {
     const newSessionTimes = {
-      ...sessionTimes,
+      pomodoro: newTimes.pomodoro * 60,
       shortBreak: newTimes.shortBreak * 60,
       longBreak: newTimes.longBreak * 60,
     };
     setSessionTimes(newSessionTimes);
 
-    if (mode === 'shortBreak' || mode === 'longBreak') {
-      setIsActive(false);
-      setTimeLeft(newSessionTimes[mode]);
-    }
+    setIsActive(false);
+    setTimeLeft(newSessionTimes[mode]);
+    
     showSuccess("Settings saved!");
   };
 

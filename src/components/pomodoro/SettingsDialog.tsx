@@ -28,6 +28,7 @@ export interface SessionTimes {
 }
 
 const settingsSchema = z.object({
+  pomodoro: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
   shortBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(60, "Cannot exceed 60 minutes."),
   longBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
 });
@@ -38,7 +39,7 @@ interface SettingsDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   sessionTimes: SessionTimes;
-  onSave: (newTimes: { shortBreak: number; longBreak: number }) => void;
+  onSave: (newTimes: { pomodoro: number; shortBreak: number; longBreak: number }) => void;
 }
 
 const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, onSave }: SettingsDialogProps) => {
@@ -49,6 +50,7 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, onSave }: Settings
   useEffect(() => {
     if (isOpen) {
       form.reset({
+        pomodoro: sessionTimes.pomodoro / 60,
         shortBreak: sessionTimes.shortBreak / 60,
         longBreak: sessionTimes.longBreak / 60,
       });
@@ -57,6 +59,7 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, onSave }: Settings
 
   const onSubmit = (data: SettingsFormValues) => {
     onSave({
+      pomodoro: data.pomodoro,
       shortBreak: data.shortBreak,
       longBreak: data.longBreak,
     });
@@ -69,11 +72,24 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, onSave }: Settings
         <DialogHeader>
           <DialogTitle>Customize Durations</DialogTitle>
           <DialogDescription>
-            Set the length of your break sessions in minutes.
+            Set the length of your sessions in minutes.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="pomodoro"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pomodoro</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="e.g., 25" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="shortBreak"

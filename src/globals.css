@@ -96,7 +96,6 @@
   }
 
   body {
-    background: transparent;
-    @apply text-foreground;
+    @apply bg-background text-foreground;
   }
 }

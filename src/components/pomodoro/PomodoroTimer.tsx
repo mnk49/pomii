@@ -111,6 +111,11 @@ const PomodoroTimer = () => {
     showSuccess("Settings saved!");
   };
 
+  const onTabChange = (newMode: Mode) => {
+    const shouldResetPomodoros = newMode === 'pomodoro';
+    handleModeChange(newMode, false, shouldResetPomodoros);
+  };
+
   return (
     <>
       <Card className="w-full max-w-2xl mx-auto bg-slate-100/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80">
@@ -126,7 +131,7 @@ const PomodoroTimer = () => {
             </Button>
           </div>
           <CardTitle className="text-center text-lg font-medium pt-8 text-foreground/80">Pomodoro</CardTitle>
-          <Tabs value={mode} onValueChange={(value) => handleModeChange(value as Mode, false, true)} className="w-full pt-4">
+          <Tabs value={mode} onValueChange={(value) => onTabChange(value as Mode)} className="w-full pt-4">
             <TabsList className="grid w-full grid-cols-3 bg-slate-200/80 dark:bg-slate-900/80 p-1 h-auto rounded-lg">
               <TabsTrigger value="pomodoro" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Pomodoro</TabsTrigger>
               <TabsTrigger value="shortBreak" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Short Break</TabsTrigger>

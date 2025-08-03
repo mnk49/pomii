@@ -29,12 +29,10 @@ const PomodoroTimer = () => {
   const [isActive, setIsActive] = useState(false);
   const [pomodoroCount, setPomodoroCount] = useState(0);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [autoStartBreaks, setAutoStartBreaks] = useState(false);
-  const [autoStartPomodoros, setAutoStartPomodoros] = useState(false);
 
-  const handleModeChange = useCallback((newMode: Mode, startImmediately = false, resetPomodoros = false) => {
+  const handleModeChange = useCallback((newMode: Mode, resetPomodoros = false) => {
     setMode(newMode);
-    setIsActive(startImmediately);
+    setIsActive(false);
     setTimeLeft(sessionTimes[newMode]);
     if (resetPomodoros) {
       setPomodoroCount(0);
@@ -63,13 +61,13 @@ const PomodoroTimer = () => {
         const newPomodoroCount = pomodoroCount + 1;
         setPomodoroCount(newPomodoroCount);
         if (newPomodoroCount > 0 && newPomodoroCount % POMODOROS_UNTIL_LONG_BREAK === 0) {
-          handleModeChange('longBreak', autoStartBreaks);
+          handleModeChange('longBreak');
         } else {
-          handleModeChange('shortBreak', autoStartBreaks);
+          handleModeChange('shortBreak');
         }
       } else {
         const isLongBreakFinished = mode === 'longBreak';
-        handleModeChange('pomodoro', autoStartPomodoros, isLongBreakFinished);
+        handleModeChange('pomodoro', isLongBreakFinished);
       }
       return;
     }
@@ -79,7 +77,7 @@ const PomodoroTimer = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isActive, timeLeft, mode, handleModeChange, pomodoroCount, autoStartBreaks, autoStartPomodoros]);
+  }, [isActive, timeLeft, mode, handleModeChange, pomodoroCount]);
 
   const toggleTimer = () => {
     setIsActive(!isActive);
@@ -94,8 +92,6 @@ const PomodoroTimer = () => {
     pomodoro: number;
     shortBreak: number;
     longBreak: number;
-    autoStartBreaks: boolean;
-    autoStartPomodoros: boolean;
   }) => {
     const newSessionTimes = {
       pomodoro: newSettings.pomodoro * 60,
@@ -103,8 +99,6 @@ const PomodoroTimer = () => {
       longBreak: newSettings.longBreak * 60,
     };
     setSessionTimes(newSessionTimes);
-    setAutoStartBreaks(newSettings.autoStartBreaks);
-    setAutoStartPomodoros(newSettings.autoStartPomodoros);
 
     setIsActive(false);
     setTimeLeft(newSessionTimes[mode]);
@@ -127,7 +121,7 @@ const PomodoroTimer = () => {
             </Button>
           </div>
           <CardTitle className="text-center text-lg font-medium pt-8 text-foreground/80">Pomodoro</CardTitle>
-          <Tabs value={mode} onValueChange={(value) => handleModeChange(value as Mode, false, false)} className="w-full pt-4">
+          <Tabs value={mode} onValueChange={(value) => handleModeChange(value as Mode, false)} className="w-full pt-4">
             <TabsList className="grid w-full grid-cols-3 bg-slate-200/80 dark:bg-slate-900/80 p-1 h-auto rounded-lg">
               <TabsTrigger value="pomodoro" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Pomodoro</TabsTrigger>
               <TabsTrigger value="shortBreak" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Short Break</TabsTrigger>
@@ -156,8 +150,6 @@ const PomodoroTimer = () => {
         isOpen={isSettingsOpen}
         onOpenChange={setIsSettingsOpen}
         sessionTimes={sessionTimes}
-        autoStartBreaks={autoStartBreaks}
-        autoStartPomodoros={autoStartPomodoros}
         onSave={handleSaveSettings}
       />
     </>

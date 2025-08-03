@@ -9,7 +9,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,8 +31,6 @@ const settingsSchema = z.object({
   pomodoro: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
   shortBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(60, "Cannot exceed 60 minutes."),
   longBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
-  autoStartBreaks: z.boolean(),
-  autoStartPomodoros: z.boolean(),
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -42,34 +39,12 @@ interface SettingsDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   sessionTimes: SessionTimes;
-  autoStartBreaks: boolean;
-  autoStartPomodoros: boolean;
-  onSave: (newSettings: { 
-    pomodoro: number; 
-    shortBreak: number; 
-    longBreak: number;
-    autoStartBreaks: boolean;
-    autoStartPomodoros: boolean;
-  }) => void;
+  onSave: (newTimes: { pomodoro: number; shortBreak: number; longBreak: number }) => void;
 }
 
-const SettingsDialog = ({ 
-  isOpen, 
-  onOpenChange, 
-  sessionTimes, 
-  autoStartBreaks,
-  autoStartPomodoros,
-  onSave 
-}: SettingsDialogProps) => {
+const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, onSave }: SettingsDialogProps) => {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: {
-      pomodoro: sessionTimes.pomodoro / 60,
-      shortBreak: sessionTimes.shortBreak / 60,
-      longBreak: sessionTimes.longBreak / 60,
-      autoStartBreaks: autoStartBreaks,
-      autoStartPomodoros: autoStartPomodoros,
-    }
   });
 
   useEffect(() => {
@@ -78,19 +53,15 @@ const SettingsDialog = ({
         pomodoro: sessionTimes.pomodoro / 60,
         shortBreak: sessionTimes.shortBreak / 60,
         longBreak: sessionTimes.longBreak / 60,
-        autoStartBreaks: autoStartBreaks,
-        autoStartPomodoros: autoStartPomodoros,
       });
     }
-  }, [isOpen, sessionTimes, autoStartBreaks, autoStartPomodoros, form]);
+  }, [isOpen, sessionTimes, form]);
 
   const onSubmit = (data: SettingsFormValues) => {
     onSave({
       pomodoro: data.pomodoro,
       shortBreak: data.shortBreak,
       longBreak: data.longBreak,
-      autoStartBreaks: data.autoStartBreaks,
-      autoStartPomodoros: data.autoStartPomodoros,
     });
     onOpenChange(false);
   };
@@ -99,9 +70,9 @@ const SettingsDialog = ({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] bg-slate-100/90 dark:bg-slate-900/80 backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
+          <DialogTitle>Customize Durations</DialogTitle>
           <DialogDescription>
-            Customize your session durations and timer behavior.
+            Set the length of your sessions in minutes.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -111,7 +82,7 @@ const SettingsDialog = ({
               name="pomodoro"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pomodoro (minutes)</FormLabel>
+                  <FormLabel>Pomodoro</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="e.g., 25" {...field} />
                   </FormControl>
@@ -124,7 +95,7 @@ const SettingsDialog = ({
               name="shortBreak"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Short Break (minutes)</FormLabel>
+                  <FormLabel>Short Break</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="e.g., 5" {...field} />
                   </FormControl>
@@ -137,7 +108,7 @@ const SettingsDialog = ({
               name="longBreak"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Long Break (minutes)</FormLabel>
+                  <FormLabel>Long Break</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="e.g., 15" {...field} />
                   </FormControl>
@@ -145,43 +116,6 @@ const SettingsDialog = ({
                 </FormItem>
               )}
             />
-            
-            <FormField
-              control={form.control}
-              name="autoStartBreaks"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                  <div className="space-y-0.5">
-                    <FormLabel>Auto Start Breaks</FormLabel>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="autoStartPomodoros"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                  <div className="space-y-0.5">
-                    <FormLabel>Auto Start Pomodoros</FormLabel>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
             <DialogFooter>
               <Button type="submit">Save Changes</Button>
             </DialogFooter>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { showSuccess } from '@/utils/toast';
 
 type Mode = 'pomodoro' | 'shortBreak' | 'longBreak';
 
@@ -45,8 +46,13 @@ const PomodoroTimer = () => {
 
     if (timeLeft === 0) {
       setIsActive(false);
-      // Using alert as a simple notification for now.
-      alert(`Time for your ${mode === 'pomodoro' ? 'break' : 'pomodoro'}!`);
+      
+      const message = `Time for your ${mode === 'pomodoro' ? 'break' : 'pomodoro'}!`;
+      showSuccess(message);
+      
+      // Play a notification sound
+      const audio = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
+      audio.play().catch(e => console.error("Error playing sound:", e));
 
       if (mode === 'pomodoro') {
         const newPomodoroCount = pomodoroCount + 1;

@@ -125,7 +125,7 @@
   max-width: 400px;
   max-height: 400px;
   background: rgba(236, 72, 153, 0.5); /* pink-500 */
-  animation: move-blob 18s infinite alternate;
+  animation: move-blob 36s infinite alternate;
 }
 
 .blob-2 {
@@ -136,7 +136,7 @@
   max-width: 500px;
   max-height: 500px;
   background: rgba(59, 130, 246, 0.4); /* blue-500 */
-  animation: move-blob 22s infinite alternate-reverse;
+  animation: move-blob 44s infinite alternate-reverse;
 }
 
 .blob-3 {
@@ -147,7 +147,7 @@
   max-width: 350px;
   max-height: 350px;
   background: rgba(20, 184, 166, 0.4); /* teal-500 */
-  animation: move-blob 20s infinite alternate;
+  animation: move-blob 40s infinite alternate;
 }
 
 @keyframes move-blob {

@@ -16,6 +16,7 @@ const DEFAULT_TIMES: SessionTimes = {
 };
 
 const POMIIS_UNTIL_LONG_BREAK = 4;
+const SETTINGS_KEY = 'pomii-settings';
 
 const SOUND_OPTIONS: { [key: string]: string } = {
   bell: 'https://actions.google.com/sounds/v1/alarms/medium_bell_ringing_near.ogg',
@@ -31,13 +32,54 @@ const formatTime = (seconds: number) => {
 
 const PomiiTimer = () => {
   const [mode, setMode] = useState<Mode>('pomii');
-  const [sessionTimes, setSessionTimes] = useState<SessionTimes>(DEFAULT_TIMES);
+
+  const [sessionTimes, setSessionTimes] = useState<SessionTimes>(() => {
+    try {
+      const saved = localStorage.getItem(SETTINGS_KEY);
+      const settings = saved ? JSON.parse(saved) : {};
+      return settings.sessionTimes || DEFAULT_TIMES;
+    } catch {
+      return DEFAULT_TIMES;
+    }
+  });
+
+  const [autoSwitch, setAutoSwitch] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(SETTINGS_KEY);
+      const settings = saved ? JSON.parse(saved) : {};
+      return typeof settings.autoSwitch === 'boolean' ? settings.autoSwitch : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const [notificationSound, setNotificationSound] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem(SETTINGS_KEY);
+      const settings = saved ? JSON.parse(saved) : {};
+      return settings.notificationSound || 'bell';
+    } catch {
+      return 'bell';
+    }
+  });
+
   const [timeLeft, setTimeLeft] = useState(sessionTimes.pomii);
   const [isActive, setIsActive] = useState(false);
   const [pomiiCount, setPomiiCount] = useState(0);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [autoSwitch, setAutoSwitch] = useState(true);
-  const [notificationSound, setNotificationSound] = useState('bell');
+
+  useEffect(() => {
+    try {
+      const settings = {
+        sessionTimes,
+        autoSwitch,
+        notificationSound,
+      };
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    } catch (error) {
+      console.error("Failed to save settings to local storage", error);
+    }
+  }, [sessionTimes, autoSwitch, notificationSound]);
 
   const handleModeChange = useCallback((newMode: Mode, resetPomiis = false) => {
     setMode(newMode);

@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { showSuccess } from '@/utils/toast';
 import { Cog } from 'lucide-react';
 import SettingsDialog, { SessionTimes } from './SettingsDialog';
+import { ThemeToggle } from '../theme-toggle';
 
 type Mode = 'pomodoro' | 'shortBreak' | 'longBreak';
 
@@ -132,7 +133,8 @@ const PomodoroTimer = () => {
             <span className="h-3 w-3 rounded-full bg-yellow-500"></span>
             <span className="h-3 w-3 rounded-full bg-green-500"></span>
           </div>
-          <div className="absolute top-2 right-2">
+          <div className="absolute top-2 right-2 flex items-center">
+            <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)}>
               <Cog className="h-5 w-5 text-foreground/60 hover:text-foreground/80 transition-colors" />
             </Button>

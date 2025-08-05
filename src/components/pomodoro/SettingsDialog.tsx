@@ -15,11 +15,13 @@ import * as z from "zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
 
 export interface SessionTimes {
   pomodoro: number;
@@ -31,6 +33,7 @@ const settingsSchema = z.object({
   pomodoro: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
   shortBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(60, "Cannot exceed 60 minutes."),
   longBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
+  autoSwitch: z.boolean().default(true),
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -39,14 +42,16 @@ interface SettingsDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   sessionTimes: SessionTimes;
+  autoSwitch: boolean;
   onSave: (newSettings: {
     pomodoro: number;
     shortBreak: number;
     longBreak: number;
+    autoSwitch: boolean;
   }) => void;
 }
 
-const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, onSave }: SettingsDialogProps) => {
+const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave }: SettingsDialogProps) => {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
   });
@@ -57,15 +62,17 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, onSave }: Settings
         pomodoro: sessionTimes.pomodoro / 60,
         shortBreak: sessionTimes.shortBreak / 60,
         longBreak: sessionTimes.longBreak / 60,
+        autoSwitch: autoSwitch,
       });
     }
-  }, [isOpen, sessionTimes, form]);
+  }, [isOpen, sessionTimes, autoSwitch, form]);
 
   const onSubmit = (data: SettingsFormValues) => {
     onSave({
       pomodoro: data.pomodoro,
       shortBreak: data.shortBreak,
       longBreak: data.longBreak,
+      autoSwitch: data.autoSwitch,
     });
     onOpenChange(false);
   };
@@ -121,6 +128,27 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, onSave }: Settings
               )}
             />
             
+            <FormField
+              control={form.control}
+              name="autoSwitch"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Auto-switch sessions</FormLabel>
+                    <FormDescription>
+                      Automatically switch to the next session.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
             <DialogFooter>
               <Button type="submit">Save Changes</Button>
             </DialogFooter>

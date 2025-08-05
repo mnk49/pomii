@@ -29,6 +29,7 @@ const PomodoroTimer = () => {
   const [isActive, setIsActive] = useState(false);
   const [pomodoroCount, setPomodoroCount] = useState(0);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [autoSwitch, setAutoSwitch] = useState(true);
 
   const handleModeChange = useCallback((newMode: Mode, resetPomodoros = false) => {
     setMode(newMode);
@@ -57,17 +58,19 @@ const PomodoroTimer = () => {
       const audio = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
       audio.play().catch(e => console.error("Error playing sound:", e));
 
-      if (mode === 'pomodoro') {
-        const newPomodoroCount = pomodoroCount + 1;
-        setPomodoroCount(newPomodoroCount);
-        if (newPomodoroCount > 0 && newPomodoroCount % POMODOROS_UNTIL_LONG_BREAK === 0) {
-          handleModeChange('longBreak');
+      if (autoSwitch) {
+        if (mode === 'pomodoro') {
+          const newPomodoroCount = pomodoroCount + 1;
+          setPomodoroCount(newPomodoroCount);
+          if (newPomodoroCount > 0 && newPomodoroCount % POMODOROS_UNTIL_LONG_BREAK === 0) {
+            handleModeChange('longBreak');
+          } else {
+            handleModeChange('shortBreak');
+          }
         } else {
-          handleModeChange('shortBreak');
+          const isLongBreakFinished = mode === 'longBreak';
+          handleModeChange('pomodoro', isLongBreakFinished);
         }
-      } else {
-        const isLongBreakFinished = mode === 'longBreak';
-        handleModeChange('pomodoro', isLongBreakFinished);
       }
       return;
     }
@@ -77,7 +80,7 @@ const PomodoroTimer = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isActive, timeLeft, mode, handleModeChange, pomodoroCount]);
+  }, [isActive, timeLeft, mode, handleModeChange, pomodoroCount, autoSwitch]);
 
   const toggleTimer = () => {
     setIsActive(!isActive);
@@ -92,6 +95,7 @@ const PomodoroTimer = () => {
     pomodoro: number;
     shortBreak: number;
     longBreak: number;
+    autoSwitch: boolean;
   }) => {
     const newSessionTimes = {
       pomodoro: newSettings.pomodoro * 60,
@@ -99,6 +103,7 @@ const PomodoroTimer = () => {
       longBreak: newSettings.longBreak * 60,
     };
     setSessionTimes(newSessionTimes);
+    setAutoSwitch(newSettings.autoSwitch);
 
     setIsActive(false);
     setTimeLeft(newSessionTimes[mode]);
@@ -150,6 +155,7 @@ const PomodoroTimer = () => {
         isOpen={isSettingsOpen}
         onOpenChange={setIsSettingsOpen}
         sessionTimes={sessionTimes}
+        autoSwitch={autoSwitch}
         onSave={handleSaveSettings}
       />
     </>

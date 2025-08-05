@@ -22,6 +22,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export interface SessionTimes {
   pomodoro: number;
@@ -34,6 +41,7 @@ const settingsSchema = z.object({
   shortBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(60, "Cannot exceed 60 minutes."),
   longBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
   autoSwitch: z.boolean().default(true),
+  notificationSound: z.string().default('bell'),
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -43,15 +51,17 @@ interface SettingsDialogProps {
   onOpenChange: (isOpen: boolean) => void;
   sessionTimes: SessionTimes;
   autoSwitch: boolean;
+  notificationSound: string;
   onSave: (newSettings: {
     pomodoro: number;
     shortBreak: number;
     longBreak: number;
     autoSwitch: boolean;
+    notificationSound: string;
   }) => void;
 }
 
-const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave }: SettingsDialogProps) => {
+const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, notificationSound, onSave }: SettingsDialogProps) => {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
   });
@@ -63,9 +73,10 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave
         shortBreak: sessionTimes.shortBreak / 60,
         longBreak: sessionTimes.longBreak / 60,
         autoSwitch: autoSwitch,
+        notificationSound: notificationSound,
       });
     }
-  }, [isOpen, sessionTimes, autoSwitch, form]);
+  }, [isOpen, sessionTimes, autoSwitch, notificationSound, form]);
 
   const onSubmit = (data: SettingsFormValues) => {
     onSave({
@@ -73,6 +84,7 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave
       shortBreak: data.shortBreak,
       longBreak: data.longBreak,
       autoSwitch: data.autoSwitch,
+      notificationSound: data.notificationSound,
     });
     onOpenChange(false);
   };
@@ -83,7 +95,7 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>
-            Set the length of your sessions.
+            Set the length of your sessions and notification preferences.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -145,6 +157,29 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="notificationSound"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notification Sound</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a sound" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="bell">Bell</SelectItem>
+                      <SelectItem value="chime">Chime</SelectItem>
+                      <SelectItem value="none">None (Mute)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />

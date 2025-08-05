@@ -16,6 +16,12 @@ const DEFAULT_TIMES: SessionTimes = {
 
 const POMODOROS_UNTIL_LONG_BREAK = 4;
 
+const SOUND_OPTIONS: { [key: string]: string } = {
+  bell: 'https://actions.google.com/sounds/v1/alarms/medium_bell_ringing_near.ogg',
+  chime: 'https://actions.google.com/sounds/v1/notifications/positive_notification.ogg',
+  none: '',
+};
+
 const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
@@ -30,6 +36,7 @@ const PomodoroTimer = () => {
   const [pomodoroCount, setPomodoroCount] = useState(0);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [autoSwitch, setAutoSwitch] = useState(true);
+  const [notificationSound, setNotificationSound] = useState('bell');
 
   const handleModeChange = useCallback((newMode: Mode, resetPomodoros = false) => {
     setMode(newMode);
@@ -55,8 +62,11 @@ const PomodoroTimer = () => {
       const message = `Time for your ${mode === 'pomodoro' ? 'break' : 'pomodoro'}!`;
       showSuccess(message);
       
-      const audio = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
-      audio.play().catch(e => console.error("Error playing sound:", e));
+      const soundUrl = SOUND_OPTIONS[notificationSound];
+      if (soundUrl) {
+        const audio = new Audio(soundUrl);
+        audio.play().catch(e => console.error("Error playing sound:", e));
+      }
 
       if (autoSwitch) {
         if (mode === 'pomodoro') {
@@ -80,7 +90,7 @@ const PomodoroTimer = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isActive, timeLeft, mode, handleModeChange, pomodoroCount, autoSwitch]);
+  }, [isActive, timeLeft, mode, handleModeChange, pomodoroCount, autoSwitch, notificationSound]);
 
   const toggleTimer = () => {
     setIsActive(!isActive);
@@ -96,6 +106,7 @@ const PomodoroTimer = () => {
     shortBreak: number;
     longBreak: number;
     autoSwitch: boolean;
+    notificationSound: string;
   }) => {
     const newSessionTimes = {
       pomodoro: newSettings.pomodoro * 60,
@@ -104,6 +115,7 @@ const PomodoroTimer = () => {
     };
     setSessionTimes(newSessionTimes);
     setAutoSwitch(newSettings.autoSwitch);
+    setNotificationSound(newSettings.notificationSound);
 
     setIsActive(false);
     setTimeLeft(newSessionTimes[mode]);
@@ -156,6 +168,7 @@ const PomodoroTimer = () => {
         onOpenChange={setIsSettingsOpen}
         sessionTimes={sessionTimes}
         autoSwitch={autoSwitch}
+        notificationSound={notificationSound}
         onSave={handleSaveSettings}
       />
     </>

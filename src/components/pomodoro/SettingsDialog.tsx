@@ -22,6 +22,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export interface SessionTimes {
   pomodoro: number;
@@ -29,11 +36,19 @@ export interface SessionTimes {
   longBreak: number;
 }
 
+export const soundOptions = [
+  { id: 'bell', name: 'Bell', url: 'https://actions.google.com/sounds/v1/alarms/bell_timer.ogg' },
+  { id: 'chime', name: 'Chime', url: 'https://actions.google.com/sounds/v1/notifications/positive_notification.ogg' },
+  { id: 'alarm', name: 'Alarm Clock', url: 'https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg' },
+  { id: 'none', name: 'None (Mute)', url: '' },
+];
+
 const settingsSchema = z.object({
   pomodoro: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
   shortBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(60, "Cannot exceed 60 minutes."),
   longBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
   autoSwitch: z.boolean().default(true),
+  sound: z.string(),
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -43,15 +58,17 @@ interface SettingsDialogProps {
   onOpenChange: (isOpen: boolean) => void;
   sessionTimes: SessionTimes;
   autoSwitch: boolean;
+  selectedSound: string;
   onSave: (newSettings: {
     pomodoro: number;
     shortBreak: number;
     longBreak: number;
     autoSwitch: boolean;
+    sound: string;
   }) => void;
 }
 
-const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave }: SettingsDialogProps) => {
+const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, selectedSound, onSave }: SettingsDialogProps) => {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
   });
@@ -63,9 +80,10 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave
         shortBreak: sessionTimes.shortBreak / 60,
         longBreak: sessionTimes.longBreak / 60,
         autoSwitch: autoSwitch,
+        sound: selectedSound,
       });
     }
-  }, [isOpen, sessionTimes, autoSwitch, form]);
+  }, [isOpen, sessionTimes, autoSwitch, selectedSound, form]);
 
   const onSubmit = (data: SettingsFormValues) => {
     onSave({
@@ -73,6 +91,7 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave
       shortBreak: data.shortBreak,
       longBreak: data.longBreak,
       autoSwitch: data.autoSwitch,
+      sound: data.sound,
     });
     onOpenChange(false);
   };
@@ -83,7 +102,7 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>
-            Set the length of your sessions.
+            Set the length of your sessions and notification preferences.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -145,6 +164,31 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, onSave
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="sound"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notification Sound</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a sound" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {soundOptions.map(option => (
+                        <SelectItem key={option.id} value={option.url}>
+                          {option.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />

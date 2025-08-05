@@ -130,12 +130,12 @@ const PomodoroTimer = () => {
           </Tabs>
         </CardHeader>
         <CardContent className="flex flex-col justify-center items-center py-10">
-          <div className="text-9xl font-semibold font-mono tracking-tighter text-primary">
+          <div className="text-8xl font-semibold font-mono tracking-tighter text-primary">
             {formatTime(timeLeft)}
           </div>
           <p className="text-muted-foreground mt-4 text-sm">
             {mode === 'pomodoro' ? `Completed Pomodoros: ${pomodoroCount}` : 'Time to relax and recharge!'}
-          p>
+          </p>
         </CardContent>
         <CardFooter className="flex justify-center space-x-4">
           <Button onClick={toggleTimer} size="lg" className="w-36 text-lg rounded-lg bg-blue-500 hover:bg-blue-600 text-white shadow">

@@ -177,7 +177,7 @@ const PomiiTimer = () => {
           </div>
           <div className="absolute top-2 right-2 flex items-center">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)}>
+            <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)} className="hover:bg-transparent transition-transform hover:scale-110">
               <Cog className="h-5 w-5 text-foreground/60 hover:text-foreground/80 transition-colors" />
             </Button>
           </div>

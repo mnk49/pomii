@@ -108,7 +108,7 @@ const PomodoroTimer = () => {
 
   return (
     <>
-      <Card className="w-full max-w-6xl mx-auto bg-slate-100/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80">
+      <Card className="w-full mx-auto bg-slate-100/80 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80">
         <CardHeader className="relative">
           <div className="absolute top-4 left-4 flex space-x-2">
             <span className="h-3 w-3 rounded-full bg-red-500"></span>

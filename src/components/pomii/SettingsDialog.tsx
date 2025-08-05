@@ -31,13 +31,13 @@ import {
 } from "@/components/ui/select";
 
 export interface SessionTimes {
-  pomodoro: number;
+  pomii: number;
   shortBreak: number;
   longBreak: number;
 }
 
 const settingsSchema = z.object({
-  pomodoro: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
+  pomii: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
   shortBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(60, "Cannot exceed 60 minutes."),
   longBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(120, "Cannot exceed 120 minutes."),
   autoSwitch: z.boolean().default(true),
@@ -53,7 +53,7 @@ interface SettingsDialogProps {
   autoSwitch: boolean;
   notificationSound: string;
   onSave: (newSettings: {
-    pomodoro: number;
+    pomii: number;
     shortBreak: number;
     longBreak: number;
     autoSwitch: boolean;
@@ -69,7 +69,7 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, notifi
   useEffect(() => {
     if (isOpen) {
       form.reset({
-        pomodoro: sessionTimes.pomodoro / 60,
+        pomii: sessionTimes.pomii / 60,
         shortBreak: sessionTimes.shortBreak / 60,
         longBreak: sessionTimes.longBreak / 60,
         autoSwitch: autoSwitch,
@@ -80,7 +80,7 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, notifi
 
   const onSubmit = (data: SettingsFormValues) => {
     onSave({
-      pomodoro: data.pomodoro,
+      pomii: data.pomii,
       shortBreak: data.shortBreak,
       longBreak: data.longBreak,
       autoSwitch: data.autoSwitch,
@@ -102,10 +102,10 @@ const SettingsDialog = ({ isOpen, onOpenChange, sessionTimes, autoSwitch, notifi
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
             <FormField
               control={form.control}
-              name="pomodoro"
+              name="pomii"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pomodoro (minutes)</FormLabel>
+                  <FormLabel>Pomii (minutes)</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="e.g., 25" {...field} />
                   </FormControl>

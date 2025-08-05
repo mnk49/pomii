@@ -7,15 +7,15 @@ import { Cog } from 'lucide-react';
 import SettingsDialog, { SessionTimes } from './SettingsDialog';
 import { ThemeToggle } from '../theme-toggle';
 
-type Mode = 'pomodoro' | 'shortBreak' | 'longBreak';
+type Mode = 'pomii' | 'shortBreak' | 'longBreak';
 
 const DEFAULT_TIMES: SessionTimes = {
-  pomodoro: 25 * 60,
+  pomii: 25 * 60,
   shortBreak: 5 * 60,
   longBreak: 15 * 60,
 };
 
-const POMODOROS_UNTIL_LONG_BREAK = 4;
+const POMIIS_UNTIL_LONG_BREAK = 4;
 
 const SOUND_OPTIONS: { [key: string]: string } = {
   bell: 'https://actions.google.com/sounds/v1/alarms/medium_bell_ringing_near.ogg',
@@ -29,27 +29,27 @@ const formatTime = (seconds: number) => {
   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 };
 
-const PomodoroTimer = () => {
-  const [mode, setMode] = useState<Mode>('pomodoro');
+const PomiiTimer = () => {
+  const [mode, setMode] = useState<Mode>('pomii');
   const [sessionTimes, setSessionTimes] = useState<SessionTimes>(DEFAULT_TIMES);
-  const [timeLeft, setTimeLeft] = useState(sessionTimes.pomodoro);
+  const [timeLeft, setTimeLeft] = useState(sessionTimes.pomii);
   const [isActive, setIsActive] = useState(false);
-  const [pomodoroCount, setPomodoroCount] = useState(0);
+  const [pomiiCount, setPomiiCount] = useState(0);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [autoSwitch, setAutoSwitch] = useState(true);
   const [notificationSound, setNotificationSound] = useState('bell');
 
-  const handleModeChange = useCallback((newMode: Mode, resetPomodoros = false) => {
+  const handleModeChange = useCallback((newMode: Mode, resetPomiis = false) => {
     setMode(newMode);
     setIsActive(false);
     setTimeLeft(sessionTimes[newMode]);
-    if (resetPomodoros) {
-      setPomodoroCount(0);
+    if (resetPomiis) {
+      setPomiiCount(0);
     }
   }, [sessionTimes]);
 
   useEffect(() => {
-    document.title = `${formatTime(timeLeft)} - Pomodoro`;
+    document.title = `${formatTime(timeLeft)} - Pomii`;
   }, [timeLeft]);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const PomodoroTimer = () => {
     if (timeLeft === 0) {
       setIsActive(false);
       
-      const message = `Time for your ${mode === 'pomodoro' ? 'break' : 'pomodoro'}!`;
+      const message = `Time for your ${mode === 'pomii' ? 'break' : 'pomii'}!`;
       showSuccess(message);
       
       const soundUrl = SOUND_OPTIONS[notificationSound];
@@ -70,17 +70,17 @@ const PomodoroTimer = () => {
       }
 
       if (autoSwitch) {
-        if (mode === 'pomodoro') {
-          const newPomodoroCount = pomodoroCount + 1;
-          setPomodoroCount(newPomodoroCount);
-          if (newPomodoroCount > 0 && newPomodoroCount % POMODOROS_UNTIL_LONG_BREAK === 0) {
+        if (mode === 'pomii') {
+          const newPomiiCount = pomiiCount + 1;
+          setPomiiCount(newPomiiCount);
+          if (newPomiiCount > 0 && newPomiiCount % POMIIS_UNTIL_LONG_BREAK === 0) {
             handleModeChange('longBreak');
           } else {
             handleModeChange('shortBreak');
           }
         } else {
           const isLongBreakFinished = mode === 'longBreak';
-          handleModeChange('pomodoro', isLongBreakFinished);
+          handleModeChange('pomii', isLongBreakFinished);
         }
       }
       return;
@@ -91,7 +91,7 @@ const PomodoroTimer = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isActive, timeLeft, mode, handleModeChange, pomodoroCount, autoSwitch, notificationSound]);
+  }, [isActive, timeLeft, mode, handleModeChange, pomiiCount, autoSwitch, notificationSound]);
 
   const toggleTimer = () => {
     setIsActive(!isActive);
@@ -103,14 +103,14 @@ const PomodoroTimer = () => {
   };
 
   const handleSaveSettings = (newSettings: {
-    pomodoro: number;
+    pomii: number;
     shortBreak: number;
     longBreak: number;
     autoSwitch: boolean;
     notificationSound: string;
   }) => {
     const newSessionTimes = {
-      pomodoro: newSettings.pomodoro * 60,
+      pomii: newSettings.pomii * 60,
       shortBreak: newSettings.shortBreak * 60,
       longBreak: newSettings.longBreak * 60,
     };
@@ -139,10 +139,10 @@ const PomodoroTimer = () => {
               <Cog className="h-5 w-5 text-foreground/60 hover:text-foreground/80 transition-colors" />
             </Button>
           </div>
-          <CardTitle className="text-center text-lg font-medium pt-8 text-foreground/80">Pomodoro</CardTitle>
+          <CardTitle className="text-center text-lg font-medium pt-8 text-foreground/80">Pomii</CardTitle>
           <Tabs value={mode} onValueChange={(value) => handleModeChange(value as Mode, false)} className="w-full pt-4">
             <TabsList className="grid w-full grid-cols-3 bg-slate-200/80 dark:bg-slate-900/80 p-1 h-auto rounded-lg">
-              <TabsTrigger value="pomodoro" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Pomodoro</TabsTrigger>
+              <TabsTrigger value="pomii" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Pomii</TabsTrigger>
               <TabsTrigger value="shortBreak" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Short Break</TabsTrigger>
               <TabsTrigger value="longBreak" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm rounded-md">Long Break</TabsTrigger>
             </TabsList>
@@ -153,7 +153,7 @@ const PomodoroTimer = () => {
             {formatTime(timeLeft)}
           </div>
           <p className="text-muted-foreground mt-4 text-sm">
-            {mode === 'pomodoro' ? `Completed Pomodoros: ${pomodoroCount}` : 'Time to relax and recharge!'}
+            {mode === 'pomii' ? `Completed Pomiis: ${pomiiCount}` : 'Time to relax and recharge!'}
           </p>
         </CardContent>
         <CardFooter className="flex justify-center space-x-4">
@@ -177,4 +177,4 @@ const PomodoroTimer = () => {
   );
 };
 
-export default PomodoroTimer;
+export default PomiiTimer;

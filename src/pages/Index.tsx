@@ -7,7 +7,7 @@ const Index = () => {
       <div className="relative z-10 w-full max-w-4xl">
         <PomodoroTimer />
       </div>
-      <div className="absolute bottom-4 z-10">
+      <div className="absolute bottom-2 z-10">
         <MadeWithDyad />
       </div>
     </div>
